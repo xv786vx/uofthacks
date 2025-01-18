@@ -2,32 +2,26 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import * as NavigationBar from 'expo-navigation-bar';
 import { Link } from 'expo-router'
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const Home = () => {
   useEffect(() => {
-    // Configure the native navigation bar
-    NavigationBar.setBackgroundColorAsync('#ffffff'); // White background
-    NavigationBar.setButtonStyleAsync('dark'); // Dark button style for light background
-    NavigationBar.setPositionAsync('absolute'); // Float above content
+    NavigationBar.setBackgroundColorAsync('#ffffff'); 
+    NavigationBar.setButtonStyleAsync('dark'); 
+    NavigationBar.setPositionAsync('absolute'); 
   }, []);
 
   return (
     <View style={styles.container}>
-      {/* Content */}
       <View style={styles.content}>
         <Text style={styles.text}>Home Screen Content</Text>
         <Link href="/memory">Memory</Link>
       </View>
-
-      {/* Profile Picture Icon in Bottom Left */}
       <View style={styles.bottomContainer}>
         <TouchableOpacity style={styles.profileIcon}>
-          {/* Replace this Text with an Image for a real profile picture */}
           <Text style={styles.iconText}>👤</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Plus Button in Top Right */}
       <View style={styles.topContainer}>
         <TouchableOpacity style={styles.plusButton}>
           <Text style={styles.plusIcon}>+</Text>
@@ -54,51 +48,51 @@ const styles = StyleSheet.create({
   },
   bottomContainer: {
     position: 'absolute',
-    bottom: 20, // Adjust to move closer/farther from the bottom
-    left: 20, // Adjust to move closer/farther from the left edge
+    bottom: 20, 
+    left: 20, 
   },
   profileIcon: {
-    width: 55,
-    height: 55,
-    borderRadius: 27.5, // Circle shape
-    backgroundColor: '#ffffff', // Pure white button
+    width: 70,
+    height: 70,
+    borderRadius: 27.5, 
+    backgroundColor: '#ffffff', 
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000', // Shadow color
-    shadowOffset: { width: 0, height: 3 }, // Shadow position
-    shadowOpacity: 0.1, // Shadow transparency
-    shadowRadius: 4, // Shadow blur radius
-    elevation: 5, // Shadow for Android
-    borderWidth: 1, // Subtle black outline
-    borderColor: '#e0e0e0', // Light gray outline color
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 3 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 4, 
+    elevation: 5, 
+    borderWidth: 1, 
+    borderColor: '#e0e0e0', 
   },
   iconText: {
     fontSize: 24,
-    color: '#333', // Darker icon color for contrast
+    color: '#333', 
   },
   topContainer: {
     position: 'absolute',
-    top: 20, // Adjust to move closer/farther from the top
-    right: 20, // Adjust to move closer/farther from the right edge
+    top: 20, 
+    right: 20, 
   },
   plusButton: {
     width: 70,
     height: 70,
-    borderRadius: 15, // Rounded square shape
-    backgroundColor: '#ffffff', // Pure white button
+    borderRadius: 15,
+    backgroundColor: '#ffffff', 
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000', // Shadow color
-    shadowOffset: { width: 0, height: 3 }, // Shadow position
-    shadowOpacity: 0.1, // Shadow transparency
-    shadowRadius: 4, // Shadow blur radius
-    elevation: 5, // Shadow for Android
-    borderWidth: 1, // Subtle black outline
-    borderColor: '#e0e0e0', // Light gray outline color
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 3 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 4, 
+    elevation: 5, 
+    borderWidth: 1, 
+    borderColor: '#e0e0e0', 
   },
   plusIcon: {
-    fontSize: 30, // Larger plus icon
-    color: '#333', // Darker text for contrast
+    fontSize: 30, 
+    color: '#333', 
     fontWeight: 'bold',
   },
 });
