@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Campus Chronicles</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+      }
+
+      body {
+        color: #2D3436;
+      }
+
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+
+      .popup {
+        font-size: 14px;
+        max-width: 300px;
+      }
+
+      .popup h3 {
+        color: #2D3436;
+        margin-bottom: 15px;
+        font-weight: 500;
+      }
+
+      .popup input,
+      .popup textarea,
+      .popup select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 12px;
+        border: 1px solid #DFE6E9;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+      }
+
+      .popup input:focus,
+      .popup textarea:focus,
+      .popup select:focus {
+        outline: none;
+        border-color: #74B9FF;
+      }
+
+      .popup button {
+        width: 100%;
+        padding: 10px;
+        background-color: #74B9FF;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .popup button:hover {
+        background-color: #0984E3;
+      }
+
+      #profile {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+        backdrop-filter: blur(10px);
+        min-width: 250px;
+      }
+
+      #profile h3 {
+        margin-bottom: 15px;
+        font-weight: 500;
+        color: #2D3436;
+      }
+
+      #profile input {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0 12px;
+        border: 1px solid #DFE6E9;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+
+      #profile button {
+        width: 100%;
+        padding: 10px;
+        background-color: #74B9FF;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      #profile button:hover {
+        background-color: #0984E3;
+      }
+
+      .category-filter {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+        backdrop-filter: blur(10px);
+      }
+
+      .category-filter select {
+        width: 200px;
+        padding: 10px;
+        margin-top: 8px;
+        border: 1px solid #DFE6E9;
+        border-radius: 6px;
+        font-size: 14px;
+        background-color: white;
+      }
+
+      h1 {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+        margin: 0;
+        font-weight: 600;
+        color: #2D3436;
+        font-size: 24px;
+        backdrop-filter: blur(10px);
+        letter-spacing: -0.5px;
+      }
+
+      .mapboxgl-popup-content {
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .mapboxgl-popup-content h3 {
+        margin-bottom: 10px;
+        color: #2D3436;
+        font-weight: 500;
+      }
+
+      .mapboxgl-popup-content p {
+        margin-bottom: 8px;
+        color: #636E72;
+        font-size: 14px;
+      }
+
+      .mapboxgl-popup-content a {
+        color: #74B9FF;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .mapboxgl-popup-content a:hover {
+        color: #0984E3;
+      }
+
+      /* Custom marker styling */
+      .mapboxgl-marker {
+        transition: transform 0.3s ease;
+      }
+
+      .mapboxgl-marker:hover {
+        transform: scale(1.1);
+      }
+
+      /* Navigation controls styling */
+      .mapboxgl-ctrl-group {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .mapboxgl-ctrl-group button {
+        width: 36px;
+        height: 36px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Campus Chronicles</h1>
+
+    <div class="category-filter">
+      <label for="category">Filter by Category: </label>
+      <select id="category">
+        <option value="">All</option>
+        <option value="study">Study</option>
+        <option value="hangout">Hangout</option>
+        <option value="event">Event</option>
+      </select>
+    </div>
+
+    <div id="map"></div>
+
+    <div id="profile">
+      <h3>User Profile</h3>
+      <label for="username">Name: </label>
+      <input type="text" id="username" placeholder="Enter your name" />
+      <button onclick="saveUserProfile()">Save Profile</button>
+    </div>
+
+    <script>
+      mapboxgl.accessToken = 'pk.eyJ1Ijoic2hhaG1lZXI2LSIsImEiOiJjbTYyamhjN3MxMXp2MnFwdXZuYTRzM2F5In0.v4biqJhea9j7EmwSufszjA';
+      let map;
+      const API_BASE_URL = "http://localhost:3000/api/memories";
+      let userProfile = { name: '', memories: [] };
+
+      async function fetchMemories(bounds, category = '') {
+        const boundsJSON = JSON.stringify(bounds);
+        const response = await fetch(`${API_BASE_URL}?bounds=${encodeURIComponent(boundsJSON)}&category=${category}`);
+
+        if (response.ok) {
+          return response.json();
+        } else {
+          console.error("Failed to fetch memories");
+          return [];
+        }
+      }
+
+      async function saveMemory(lat, lng, title, description, category) {
+        try {
+          const response = await fetch(API_BASE_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ lat, lng, title, description, category }),
+          });
+
+          if (response.ok) {
+            showNotification("Memory saved successfully!");
+            location.reload();
+          } else {
+            const error = await response.json();
+            showNotification("Failed to save memory: " + error.error, "error");
+          }
+        } catch (error) {
+          console.error("Error saving memory:", error);
+          showNotification("An error occurred. Please try again.", "error");
+        }
+      }
+
+      function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      }
+
+      function saveUserProfile() {
+        const name = document.getElementById("username").value;
+        if (name) {
+          userProfile.name = name;
+          showNotification(`Welcome, ${name}! Your profile has been saved.`);
+        } else {
+          showNotification("Please enter your name.", "error");
+        }
+      }
+
+      function initMap() {
+        map = new mapboxgl.Map({
+          container: "map",
+          style: "mapbox://styles/mapbox/light-v10",
+          center: [-79.3832, 43.6532],
+          zoom: 16,
+          pitch: 60,
+          bearing: -17.6,
+          antialias: true
+        });
+
+        map.addControl(new mapboxgl.NavigationControl());
+
+        map.on('load', () => {
+          map.addLayer({
+            'id': 'sky',
+            'type': 'sky',
+            'paint': {
+              'sky-type': 'atmosphere',
+              'sky-atmosphere-sun': [0.0, 90.0],
+              'sky-atmosphere-sun-intensity': 15
+            }
+          });
+
+          map.addLayer({
+            'id': '3d-buildings',
+            'source': 'composite',
+            'source-layer': 'building',
+            'filter': ['==', 'extrude', 'true'],
+            'type': 'fill-extrusion',
+            'minzoom': 12,
+            'paint': {
+              'fill-extrusion-color': [
+                'interpolate',
+                ['linear'],
+                ['get', 'height'],
+                0, '#DCE6E8',
+                50, '#B8C6C9',
+                100, '#94A6AA',
+                200, '#708589'
+              ],
+              'fill-extrusion-height': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                15, 0,
+                15.05, ['get', 'height']
+              ],
+              'fill-extrusion-base': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                15, 0,
+                15.05, ['get', 'min_height']
+              ],
+              'fill-extrusion-opacity': 0.7
+            }
+          });
+
+          loadMemories();
+        });
+
+        map.on("click", (event) => {
+          const { lng, lat } = event.lngLat;
+          const popupContent = `
+            <div class="popup">
+              <h3>Add a Memory</h3>
+              <input type="text" id="memoryTitle" placeholder="Enter title">
+              <textarea id="memoryDescription" placeholder="Describe your memory"></textarea>
+              <label for="category">Category: </label>
+              <select id="memoryCategory">
+                <option value="study">Study</option>
+                <option value="hangout">Hangout</option>
+                <option value="event">Event</option>
+              </select>
+              <button onclick="handleSaveMemory(${lng}, ${lat})">Save Memory</button>
+            </div>
+          `;
+
+          new mapboxgl.Popup({ closeOnClick: true })
+            .setLngLat([lng, lat])
+            .setHTML(popupContent)
+            .addTo(map);
+        });
+      }
+
+      async function loadMemories() {
+        const bounds = map.getBounds().toArray();
+        const category = document.getElementById("category").value;
+        const memories = await fetchMemories(bounds, category);
+
+        memories.forEach((memory) => {
+          new mapboxgl.Marker()
+            .setLngLat([memory.lng, memory.lat])
+            .setPopup(
+              new mapboxgl.Popup().setHTML(`
+                <div class="memory-popup">
+                  <h3>${memory.title}</h3>
+                  <p>${memory.description}</p>
+                  <p class="category">Category: ${memory.category}</p>
+                  <p class="author">Shared by: ${memory.user}</p>
+                  <a href="/memory/${memory.id}" target="_blank">View Details</a>
+                </div>
+              `)
+            )
+            .addTo(map);
+        });
+      }
+
+      function handleSaveMemory(lng, lat) {
+        const title = document.getElementById("memoryTitle").value;
+        const description = document.getElementById("memoryDescription").value;
+        const category = document.getElementById("memoryCategory").value;
+
+        if (title && description) {
+          saveMemory(lat, lng, title, description, category);
+        } else {
+          showNotification("Please fill in all fields.", "error");
+        }
+      }
+
+      window.onload = initMap;
+
+      // Add event listener for category filter
+      document.getElementById("category").addEventListener("change", loadMemories);
+    </script>
+  </body>
+</html>

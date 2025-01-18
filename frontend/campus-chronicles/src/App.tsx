@@ -7,10 +7,10 @@ export default function App() {
   return (
     <div className="w-screen h-screen bg-red-500">
       <header className="text-center">
-        <h1 className="pt-32 text-7xl font-bold mb-8">Campus Chronicles</h1>
+        <h1 className="pt-32 text-7xl font-bold mb-8 text-white">Campus Chronicles</h1>
         <SignedOut>
           <SignInButton>
-            <button className="mt-48 px-24 py-16 bg-neutral-500 text-white text-4xl rounded-lg hover:bg-blue-600">
+            <button className="py-4 px-6 mt-48 mb-4 bg-black rounded-xl hover:bg-white text-white hover:text-black ease-in-out duration-300">
               Sign In dude
             </button>
           </SignInButton>
