@@ -4,11 +4,10 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 
-
 const InitialLayout = () => {
   return (
     <Stack>
-      <Stack.Screen name='index' options={{ headerShown: true}}/>
+      <Stack.Screen name='index' options={{ headerShown: false}}/>
     </Stack>
   );
 };
@@ -27,3 +26,7 @@ const RootLayoutNav = () => {
 };
 
 export default RootLayoutNav;
+
+function createStackNavigator() {
+  throw new Error("Function not implemented.");
+}
