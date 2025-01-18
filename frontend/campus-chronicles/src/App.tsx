@@ -7,7 +7,7 @@ export default function App() {
     <div className="bg-[url('/public/images/bgImage.jpg')] bg-cover w-screen h-screen">
       <header className="text-center">
         <div className="flex flex-col items-center justify-center pt-24">
-          <h1 className="text-7xl font-bold font-lora text-black text-white">Campus Chronicles</h1>
+          <h1 className="text-7xl font-bold font-lora text-black">Campus Chronicles</h1>
           <img 
             src="/public/images/cc-logo.png" 
             alt="Campus Chronicles Logo" 
