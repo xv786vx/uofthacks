@@ -1,17 +1,23 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react'
-import  React from 'react'
+import React from 'react'
 import './index.css'
-
 
 export default function App() {
   return (
-    <div className="w-screen h-screen bg-red-500">
+    <div className="bg-[url('/public/images/bgImage.jpg')] bg-cover w-screen h-screen bg-red-500">
       <header className="text-center">
-        <h1 className="pt-32 text-7xl font-bold mb-8">Campus Chronicles</h1>
+        <div className="flex flex-col items-center justify-center pt-24">
+          <h1 className="text-7xl font-bold font-lora text-black">Campus Chronicles</h1>
+          <img 
+            src="/public/images/cc-logo.png" 
+            alt="Campus Chronicles Logo" 
+            className="w-21 h-21s mt-10 animate-flip"
+          />
+        </div>
         <SignedOut>
           <SignInButton>
-            <button className="mt-48 px-24 py-16 bg-neutral-500 text-white text-4xl rounded-lg hover:bg-blue-600">
-              Sign In dude
+            <button className="mt-16 py-6 px-9 mb-4 font-lora bg-black rounded-xl hover:bg-slate-500 text-white ease-in-out duration-300">
+              Login
             </button>
           </SignInButton>
         </SignedOut>
