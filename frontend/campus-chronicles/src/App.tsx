@@ -1,30 +1,42 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react'
-import React from 'react'
+import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/clerk-react'
+import React, { useEffect } from 'react'
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'
 import './index.css'
+import HomePage from './HomePage';
 
 export default function App() {
+  const { isSignedIn } = useUser();
+
+
   return (
+    <Router>
+      <Routes>
+        <Route path="/" element={
     <div className="bg-[url('/public/images/bgImage.jpg')] bg-cover w-screen h-screen">
       <header className="text-center">
-        <div className="flex flex-col items-center justify-center pt-24">
+        <div className="flex flex-col items-center justify-center pt-8">
           <h1 className="text-7xl font-bold font-lora text-black">Campus Chronicles</h1>
           <img 
-            src="/public/images/cc-logo.png" 
+            src="images/cc-logo.png" 
             alt="Campus Chronicles Logo" 
-            className="w-21 h-21s mt-10 animate-flip"
+            className="w-21 h-21s smt-10 animate-flip mt-4"
           />
         </div>
         <SignedOut>
-          <SignInButton>
-            <button className="mt-16 py-6 px-9 mb-4 font-lora bg-black rounded-xl hover:bg-slate-500 text-white ease-in-out duration-300">
+          <SignInButton >
+            <button className="mt-16 py-6 px-9 mb-4 font-lora bg-black rounded-xl hover:bg-white text-white hover:text-black ease-in-out duration-300">
               Login
             </button>
           </SignInButton>
-        </SignedOut>
+        </SignedOut >
         <SignedIn>
-          <UserButton />
+          <UserButton afterSignOutUrl="/" />
         </SignedIn>
       </header>
     </div>
+        } />
+    <Route path="/homepage" element={<HomePage />} />
+    </Routes>
+    </Router>
   )
 }
