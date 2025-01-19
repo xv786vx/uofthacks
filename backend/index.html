@@ -5,16 +5,22 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       }
 
       body {
-        color: #2D3436;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+        background: #000;
       }
 
       #map {
@@ -22,184 +28,233 @@
         width: 100%;
       }
 
-      .popup {
-        font-size: 14px;
-        max-width: 300px;
-      }
-
-      .popup h3 {
-        color: #2D3436;
-        margin-bottom: 15px;
-        font-weight: 500;
-      }
-
-      .popup input,
-      .popup textarea,
-      .popup select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 12px;
-        border: 1px solid #DFE6E9;
-        border-radius: 6px;
-        font-size: 14px;
-        transition: border-color 0.3s ease;
-      }
-
-      .popup input:focus,
-      .popup textarea:focus,
-      .popup select:focus {
-        outline: none;
-        border-color: #74B9FF;
-      }
-
-      .popup button {
-        width: 100%;
-        padding: 10px;
-        background-color: #74B9FF;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-
-      .popup button:hover {
-        background-color: #0984E3;
+      .category-filter {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        backdrop-filter: blur(10px);
       }
 
       #profile {
         position: absolute;
         top: 20px;
         right: 20px;
-        background: rgba(255, 255, 255, 0.95);
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         z-index: 1;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         backdrop-filter: blur(10px);
-        min-width: 250px;
       }
 
-      #profile h3 {
-        margin-bottom: 15px;
-        font-weight: 500;
-        color: #2D3436;
+      .custom-popup {
+        background: white !important;
+        border-radius: 15px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
       }
 
-      #profile input {
-        width: 100%;
-        padding: 10px;
-        margin: 8px 0 12px;
-        border: 1px solid #DFE6E9;
-        border-radius: 6px;
+      .popup {
+        padding: 15px;
+      }
+
+      .popup input,
+      .popup textarea,
+      .popup select {
+        border: 2px solid #eee;
+        border-radius: 12px;
+        padding: 12px;
         font-size: 14px;
+        transition: border-color 0.3s;
       }
 
-      #profile button {
-        width: 100%;
-        padding: 10px;
-        background-color: #74B9FF;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-weight: 500;
+      .popup input:focus,
+      .popup textarea:focus,
+      .popup select:focus {
+        border-color: #fffc00;
+        outline: none;
+      }
+
+      .popup button {
+        background: #fffc00;
+        color: #000;
+        font-weight: bold;
+        border-radius: 12px;
+        padding: 12px;
+        transition: transform 0.2s;
+      }
+
+      .popup button:hover {
+        transform: scale(1.02);
+      }
+
+      .mapboxgl-marker {
         cursor: pointer;
-        transition: background-color 0.3s ease;
       }
 
-      #profile button:hover {
-        background-color: #0984E3;
-      }
-
-      .category-filter {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        background: rgba(255, 255, 255, 0.95);
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        z-index: 1;
-        backdrop-filter: blur(10px);
-      }
-
-      .category-filter select {
-        width: 200px;
-        padding: 10px;
-        margin-top: 8px;
-        border: 1px solid #DFE6E9;
-        border-radius: 6px;
-        font-size: 14px;
-        background-color: white;
-      }
+      /* Custom marker colors */
+      .marker-study { background-color: #fffc00; }
+      .marker-hangout { background-color: #ff3366; }
+      .marker-event { background-color: #00ff87; }
 
       h1 {
         position: absolute;
         top: 20px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(255, 255, 255, 0.95);
-        padding: 15px 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         z-index: 1;
-        margin: 0;
-        font-weight: 600;
-        color: #2D3436;
-        font-size: 24px;
+        color: white;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px 20px;
+        border-radius: 8px;
         backdrop-filter: blur(10px);
-        letter-spacing: -0.5px;
       }
 
-      .mapboxgl-popup-content {
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      .custom-marker {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        cursor: pointer;
+        background-size: cover;
+        background-position: center;
       }
 
-      .mapboxgl-popup-content h3 {
-        margin-bottom: 10px;
-        color: #2D3436;
-        font-weight: 500;
+      .memory-popup {
+        background: white;
+        border-radius: 15px;
+        padding: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       }
 
-      .mapboxgl-popup-content p {
+      .memory-popup h3 {
+        color: #000;
         margin-bottom: 8px;
-        color: #636E72;
+        font-size: 16px;
+      }
+
+      .memory-popup p {
+        color: #666;
+        margin: 5px 0;
         font-size: 14px;
       }
 
-      .mapboxgl-popup-content a {
-        color: #74B9FF;
-        text-decoration: none;
+      .memory-popup .category {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        background: #fffc00;
+        color: #000;
+        font-weight: bold;
+        font-size: 12px;
+      }
+
+      .memory-popup .author {
+        color: #999;
+        font-size: 12px;
+        margin-top: 8px;
+      }
+
+      .memory-popup {
+        padding: 15px;
+        max-width: 300px;
+      }
+
+      .memory-popup h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 18px;
+      }
+
+      .memory-popup .description {
+        margin: 0 0 15px 0;
+        color: #666;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .memory-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+      }
+
+      .category-tag {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
         font-weight: 500;
-        transition: color 0.3s ease;
       }
 
-      .mapboxgl-popup-content a:hover {
-        color: #0984E3;
+      .category-tag.study {
+        background: #fffc00;
+        color: #000;
       }
 
-      /* Custom marker styling */
-      .mapboxgl-marker {
-        transition: transform 0.3s ease;
+      .category-tag.hangout {
+        background: #ff3366;
+        color: white;
       }
 
-      .mapboxgl-marker:hover {
+      .category-tag.event {
+        background: #00ff87;
+        color: #000;
+      }
+
+      .author {
+        font-size: 12px;
+        color: #999;
+      }
+
+      .custom-marker {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .custom-marker:hover {
         transform: scale(1.1);
       }
 
-      /* Navigation controls styling */
-      .mapboxgl-ctrl-group {
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      .marker-study {
+        background-color: #fffc00;
       }
 
-      .mapboxgl-ctrl-group button {
-        width: 36px;
-        height: 36px;
+      .marker-hangout {
+        background-color: #ff3366;
+      }
+
+      .marker-event {
+        background-color: #00ff87;
+      }
+
+      /* Style for the popup container */
+      .mapboxgl-popup-content {
+        border-radius: 15px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        padding: 0 !important;
+        overflow: hidden;
+      }
+
+      .mapboxgl-popup-close-button {
+        padding: 8px !important;
+        color: #666 !important;
+        font-size: 16px !important;
+      }
+
+      .mapboxgl-popup-close-button:hover {
+        color: #333 !important;
+        background: none !important;
       }
     </style>
   </head>
@@ -208,7 +263,7 @@
 
     <div class="category-filter">
       <label for="category">Filter by Category: </label>
-      <select id="category">
+      <select id="category" onchange="loadMemories()">
         <option value="">All</option>
         <option value="study">Study</option>
         <option value="hangout">Hangout</option>
@@ -226,169 +281,218 @@
     </div>
 
     <script>
-      mapboxgl.accessToken = 'pk.eyJ1Ijoic2hhaG1lZXI2LSIsImEiOiJjbTYyamhjN3MxMXp2MnFwdXZuYTRzM2F5In0.v4biqJhea9j7EmwSufszjA';
-      let map;
-      const API_BASE_URL = "http://localhost:3000/api/memories";
-      let userProfile = { name: '', memories: [] };
+      // Initialize Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyCfXEUFBvHSLpPfrY1Z5E_zZqI0FStFpls",
+        authDomain: "campus-chronicles-f92a0.firebaseapp.com",
+        projectId: "campus-chronicles-f92a0",
+        storageBucket: "campus-chronicles-f92a0.firebasestorage.app",
+        messagingSenderId: "534807817345",
+        appId: "1:534807817345:web:85d07dc4cf1eacc256b180",
+        measurementId: "G-R50PMVE7P8"
+      };
 
-      async function fetchMemories(bounds, category = '') {
-        const boundsJSON = JSON.stringify(bounds);
-        const response = await fetch(`${API_BASE_URL}?bounds=${encodeURIComponent(boundsJSON)}&category=${category}`);
-
-        if (response.ok) {
-          return response.json();
-        } else {
-          console.error("Failed to fetch memories");
-          return [];
-        }
-      }
-
-      async function saveMemory(lat, lng, title, description, category) {
-        try {
-          const response = await fetch(API_BASE_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ lat, lng, title, description, category }),
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+      
+      // Enable persistence to work offline (optional)
+      db.enablePersistence()
+          .catch((err) => {
+              if (err.code == 'failed-precondition') {
+                  console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+              } else if (err.code == 'unimplemented') {
+                  console.log('The current browser does not support persistence.');
+              }
           });
 
-          if (response.ok) {
-            showNotification("Memory saved successfully!");
-            location.reload();
-          } else {
-            const error = await response.json();
-            showNotification("Failed to save memory: " + error.error, "error");
-          }
-        } catch (error) {
-          console.error("Error saving memory:", error);
-          showNotification("An error occurred. Please try again.", "error");
-        }
-      }
+      // Mapbox token
+      mapboxgl.accessToken = 'pk.eyJ1Ijoic2hhaG1lZXI2LSIsImEiOiJjbTYyamhjN3MxMXp2MnFwdXZuYTRzM2F5In0.v4biqJhea9j7EmwSufszjA';
+      let map;
 
-      function showNotification(message, type = 'success') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-      }
-
-      function saveUserProfile() {
-        const name = document.getElementById("username").value;
-        if (name) {
-          userProfile.name = name;
-          showNotification(`Welcome, ${name}! Your profile has been saved.`);
-        } else {
-          showNotification("Please enter your name.", "error");
-        }
-      }
-
+      // Initialize map
       function initMap() {
         map = new mapboxgl.Map({
           container: "map",
-          style: "mapbox://styles/mapbox/light-v10",
+          style: 'mapbox://styles/mapbox/streets-v12',
           center: [-79.3832, 43.6532],
           zoom: 16,
-          pitch: 60,
+          pitch: 45,
           bearing: -17.6,
           antialias: true
         });
 
-        map.addControl(new mapboxgl.NavigationControl());
-
         map.on('load', () => {
-          map.addLayer({
-            'id': 'sky',
-            'type': 'sky',
-            'paint': {
-              'sky-type': 'atmosphere',
-              'sky-atmosphere-sun': [0.0, 90.0],
-              'sky-atmosphere-sun-intensity': 15
-            }
-          });
-
+          map.setPaintProperty('background', 'background-color', '#aedff4');
+          map.setPaintProperty('water', 'fill-color', '#75cff0');
+          
           map.addLayer({
             'id': '3d-buildings',
             'source': 'composite',
             'source-layer': 'building',
             'filter': ['==', 'extrude', 'true'],
             'type': 'fill-extrusion',
-            'minzoom': 12,
+            'minzoom': 15,
             'paint': {
               'fill-extrusion-color': [
                 'interpolate',
                 ['linear'],
                 ['get', 'height'],
-                0, '#DCE6E8',
-                50, '#B8C6C9',
-                100, '#94A6AA',
-                200, '#708589'
+                0, '#e8e8e8',
+                50, '#f5d3c9',
+                100, '#f7c297',
+                150, '#f1b3a5',
+                200, '#e4a9b9'
               ],
               'fill-extrusion-height': [
                 'interpolate',
                 ['linear'],
                 ['zoom'],
-                15, 0,
-                15.05, ['get', 'height']
+                15,
+                0,
+                15.05,
+                ['get', 'height']
               ],
               'fill-extrusion-base': [
                 'interpolate',
                 ['linear'],
                 ['zoom'],
-                15, 0,
-                15.05, ['get', 'min_height']
+                15,
+                0,
+                15.05,
+                ['get', 'min_height']
               ],
-              'fill-extrusion-opacity': 0.7
+              'fill-extrusion-opacity': 0.9
+            }
+          });
+
+          map.addLayer({
+            'id': 'park-areas',
+            'type': 'fill',
+            'source': 'composite',
+            'source-layer': 'landuse',
+            'filter': ['==', 'class', 'park'],
+            'paint': {
+              'fill-color': '#b5e8af',
+              'fill-opacity': 0.8
+            }
+          });
+
+          map.setPaintProperty('road-primary', 'line-color', '#ffffff');
+          map.setPaintProperty('road-secondary', 'line-color', '#ffffff');
+          map.setPaintProperty('road-street', 'line-color', '#ffffff');
+
+          map.addControl(
+            new mapboxgl.NavigationControl({
+              visualizePitch: true
+            })
+          );
+
+          // Add click handler for the map
+          map.on('click', (e) => {
+            // Check if we clicked on a marker
+            const features = map.queryRenderedFeatures(e.point, {
+              layers: ['markers-layer'] // We'll create this layer
+            });
+
+            if (!features.length) {
+              // Only show new memory popup if we didn't click on a marker
+              showAddMemoryPopup(e.lngLat);
             }
           });
 
           loadMemories();
         });
+      }
 
-        map.on("click", (event) => {
-          const { lng, lat } = event.lngLat;
-          const popupContent = `
-            <div class="popup">
-              <h3>Add a Memory</h3>
-              <input type="text" id="memoryTitle" placeholder="Enter title">
-              <textarea id="memoryDescription" placeholder="Describe your memory"></textarea>
-              <label for="category">Category: </label>
-              <select id="memoryCategory">
-                <option value="study">Study</option>
-                <option value="hangout">Hangout</option>
-                <option value="event">Event</option>
-              </select>
-              <button onclick="handleSaveMemory(${lng}, ${lat})">Save Memory</button>
-            </div>
-          `;
+      // Separate function for showing the add memory popup
+      function showAddMemoryPopup(lngLat) {
+        const popupContent = `
+          <div class="popup">
+            <h3>Add a Memory</h3>
+            <input type="text" id="memoryTitle" placeholder="Enter title">
+            <textarea id="memoryDescription" placeholder="Describe your memory"></textarea>
+            <select id="memoryCategory">
+              <option value="study">Study</option>
+              <option value="hangout">Hangout</option>
+              <option value="event">Event</option>
+            </select>
+            <button onclick="handleSaveMemory(${lngLat.lng}, ${lngLat.lat})">Save Memory</button>
+          </div>
+        `;
 
-          new mapboxgl.Popup({ closeOnClick: true })
-            .setLngLat([lng, lat])
-            .setHTML(popupContent)
-            .addTo(map);
-        });
+        new mapboxgl.Popup({
+          className: 'custom-popup',
+          closeButton: true,
+          maxWidth: '300px'
+        })
+          .setLngLat([lngLat.lng, lngLat.lat])
+          .setHTML(popupContent)
+          .addTo(map);
+      }
+
+      async function saveMemory(lat, lng, title, description, category) {
+        try {
+          await db.collection('memories').add({
+            title,
+            description,
+            lat,
+            lng,
+            category,
+            user: document.getElementById("username").value || 'Anonymous',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          alert('Memory saved successfully!');
+          loadMemories();
+        } catch (error) {
+          console.error('Error saving memory:', error);
+          alert('Error saving memory: ' + error.message);
+        }
       }
 
       async function loadMemories() {
-        const bounds = map.getBounds().toArray();
-        const category = document.getElementById("category").value;
-        const memories = await fetchMemories(bounds, category);
+        try {
+          const snapshot = await db.collection('memories').get();
+          const memories = [];
+          
+          snapshot.forEach(doc => {
+            memories.push({ id: doc.id, ...doc.data() });
+          });
 
-        memories.forEach((memory) => {
-          new mapboxgl.Marker()
-            .setLngLat([memory.lng, memory.lat])
-            .setPopup(
-              new mapboxgl.Popup().setHTML(`
-                <div class="memory-popup">
-                  <h3>${memory.title}</h3>
-                  <p>${memory.description}</p>
-                  <p class="category">Category: ${memory.category}</p>
-                  <p class="author">Shared by: ${memory.user}</p>
-                  <a href="/memory/${memory.id}" target="_blank">View Details</a>
+          // Clear existing markers
+          const markers = document.querySelectorAll('.mapboxgl-marker');
+          markers.forEach(marker => marker.remove());
+
+          // Add new markers
+          memories.forEach(memory => {
+            const el = document.createElement('div');
+            el.className = `custom-marker marker-${memory.category}`;
+            
+            // Create popup content for viewing memory
+            const viewPopupContent = `
+              <div class="memory-popup">
+                <h3>${memory.title}</h3>
+                <p class="description">${memory.description}</p>
+                <div class="memory-meta">
+                  <span class="category-tag ${memory.category}">${memory.category}</span>
+                  <span class="author">By ${memory.user || 'Anonymous'}</span>
                 </div>
-              `)
-            )
-            .addTo(map);
-        });
+              </div>
+            `;
+
+            // Create marker with popup
+            new mapboxgl.Marker(el)
+              .setLngLat([memory.lng, memory.lat])
+              .setPopup(
+                new mapboxgl.Popup({ offset: 25, closeButton: true })
+                  .setHTML(viewPopupContent)
+              )
+              .addTo(map);
+          });
+        } catch (error) {
+          console.error("Error loading memories:", error);
+        }
       }
 
       function handleSaveMemory(lng, lat) {
@@ -399,14 +503,21 @@
         if (title && description) {
           saveMemory(lat, lng, title, description, category);
         } else {
-          showNotification("Please fill in all fields.", "error");
+          alert("Please fill in all fields.");
+        }
+      }
+
+      function saveUserProfile() {
+        const name = document.getElementById("username").value;
+        if (name) {
+          localStorage.setItem('userName', name);
+          alert(`Profile saved for ${name}`);
+        } else {
+          alert("Please enter your name");
         }
       }
 
       window.onload = initMap;
-
-      // Add event listener for category filter
-      document.getElementById("category").addEventListener("change", loadMemories);
     </script>
   </body>
 </html>
